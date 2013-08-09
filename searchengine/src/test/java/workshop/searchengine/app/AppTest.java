@@ -1,38 +1,30 @@
 package workshop.searchengine.app;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
-/**
- * Unit test for simple App.
- */
-public class AppTest 
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public AppTest( String testName )
-    {
-        super( testName );
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import static org.junit.Assert.assertEquals;
+
+@RunWith(JUnit4.class)
+public class AppTest{
+
+    @Mock App mock;
+
+    App app = new App();
+
+   @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
     }
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
-    }
-
-    /**
-     * Rigourous Test :-)
-     */
+    @Test
     public void testApp()
     {
-        assertTrue( true );
+        assertEquals(1, app.mone());
+        assertEquals(0, mock.mone());
     }
 }

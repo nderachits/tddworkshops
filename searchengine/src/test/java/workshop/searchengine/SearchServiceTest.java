@@ -14,7 +14,6 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(JUnit4.class)
 public class SearchServiceTest {
 
-    private final String TEXT = "a b c!";
     private SearchService searchService;
 
     @Before
@@ -24,22 +23,14 @@ public class SearchServiceTest {
 
     @Test
     public void should_return_index_by_text() throws Exception {
-
-        SearchIndex index = searchService.parseText(TEXT);
+        SearchIndex index = searchService.parseText("a b c!");
         assertNotNull("returned index should be not null SearchIndex instance", index);
     }
 
     @Test
     public void should_return_zero_offset_when_text_equals_query_word() throws Exception {
-
         SearchIndex index = searchService.parseText("a");
         assertEquals(0, index.queryWordOffset("a"));
-    }
-
-    @Test
-    public void should_return_first_non_whitespace_word() throws Exception {
-        SearchIndex index = searchService.parseText(" a");
-        assertEquals(1, index.queryWordOffset("a"));
     }
 
     @Test
@@ -59,4 +50,11 @@ public class SearchServiceTest {
         SearchIndex index = searchService.parseText("a1, b2 c3.");
         assertEquals(7, index.queryWordOffset("c3"));
     }
+
+    @Test
+    public void should_not_fail_when_empty_text() throws Exception {
+        SearchIndex index = searchService.parseText("");
+        assertEquals(-1, index.queryWordOffset("a"));
+    }
+
 }

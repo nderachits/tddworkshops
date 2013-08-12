@@ -1,5 +1,6 @@
 package workshop.searchengine;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -14,12 +15,48 @@ import static org.junit.Assert.assertNotNull;
 public class SearchServiceTest {
 
     private final String TEXT = "a b c!";
+    private SearchService searchService;
+
+    @Before
+    public void setUp() throws Exception {
+        searchService = new SearchService();
+    }
 
     @Test
     public void should_return_index_by_text() throws Exception {
 
-        SearchService searchService = new SearchService();
-        SearchIndex searchIndex = searchService.parseText(TEXT);
-        assertNotNull("returned index should be not null SearchIndex instance", searchIndex);
+        SearchIndex index = searchService.parseText(TEXT);
+        assertNotNull("returned index should be not null SearchIndex instance", index);
+    }
+
+    @Test
+    public void should_return_zero_offset_when_text_equals_query_word() throws Exception {
+
+        SearchIndex index = searchService.parseText("a");
+        assertEquals(0, index.queryWordOffset("a"));
+    }
+
+    @Test
+    public void should_return_first_non_whitespace_word() throws Exception {
+        SearchIndex index = searchService.parseText(" a");
+        assertEquals(1, index.queryWordOffset("a"));
+    }
+
+    @Test
+    public void should_return_first_non_whitespace_word_surrunded_by_spaces() throws Exception {
+        SearchIndex index = searchService.parseText(" a ");
+        assertEquals(1, index.queryWordOffset("a"));
+    }
+
+    @Test
+    public void should_return_the_index_of_second_word() throws Exception {
+        SearchIndex index = searchService.parseText(" a b ");
+        assertEquals(3, index.queryWordOffset("b"));
+    }
+
+    @Test
+    public void should_return_the_index_of_last_word_with_commas_and_stops() throws Exception {
+        SearchIndex index = searchService.parseText("a1, b2 c3.");
+        assertEquals(7, index.queryWordOffset("c3"));
     }
 }

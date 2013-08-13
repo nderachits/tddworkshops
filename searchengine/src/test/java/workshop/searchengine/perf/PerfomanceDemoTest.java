@@ -25,40 +25,14 @@ public class PerfomanceDemoTest {
         searchService = new SearchService();
     }
 
-    @Test
-    public void should_parse_twbs_string() throws Exception {
-
-        BufferedReader reader = new BufferedReader(new FileReader("data/twbs.txt"));
-        StringBuilder stringBuilder = new StringBuilder();
-
-        char[] chars = new char[256];
-        int n;
-        while((n = reader.read(chars)) != -1) {
-            stringBuilder.append(chars, 0, n);
-        }
-
-        String text = stringBuilder.toString();
-        long startTime = System.currentTimeMillis();
-        SearchIndex index = searchService.parseText(text);
-
-        long endTime = System.currentTimeMillis();
-
-        checkWordInIndex(text, index, "optional");
-        checkWordInIndex(text, index, "integral");
-
-        float dt = (endTime - startTime) / 1000f;
-        System.out.println("twbs parsing time: "+dt);
-    }
-
     private void checkWordInIndex(String text, SearchIndex index, String word) {
         Integer[] res = index.queryWordOffsets(word);
-        for (int i = 0; i < res.length; i++) {
-            Integer re = res[i];
+        for (Integer re : res) {
             assertEquals(word, text.substring(re, re + word.length()));
         }
     }
 
-    private void comparePerfomance(String test, SearchIndex index, String word) {
+    private void comparePerformance(String test, SearchIndex index, String word) {
         int brootSearchOffset=0;
         int indexSearchOffset=-1;
         int repeatCount = 200;
@@ -75,7 +49,7 @@ public class PerfomanceDemoTest {
         float deltaTimeIndex = (System.currentTimeMillis() - startTimeIndex) / 1000f;
 
         assertEquals(brootSearchOffset, indexSearchOffset);
-        System.out.println("perf test(repeated "+repeatCount+"): " +
+        System.out.println("perfomance test(repeated "+repeatCount+"): " +
                 "broot: "+deltaTimeBroot+", index: "+deltaTimeIndex);
     }
     @Test
@@ -102,7 +76,7 @@ public class PerfomanceDemoTest {
         float dt = (endTime - startTime) / 1000f;
         System.out.println("rails parsing time: "+dt);
 
-        comparePerfomance(text, index, "ISINDEX");
+        comparePerformance(text, index, "ISINDEX");
 
         System.out.println("assert_equal word appeared in rails "+ index.queryWordOffsets("assert_equal").length +" times");
     }

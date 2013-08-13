@@ -103,6 +103,8 @@ public class PerfomanceDemoTest {
         System.out.println("rails parsing time: "+dt);
 
         comparePerfomance(text, index, "ISINDEX");
+
+        System.out.println("assert_equal word appeared in rails "+ index.queryWordOffsets("assert_equal").length +" times");
     }
 
 }

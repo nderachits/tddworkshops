@@ -46,6 +46,12 @@ public class SearchServiceTest {
     }
 
     @Test
+    public void should_count_underscore_as_letter() throws Exception {
+        SearchIndex index = searchService.parseText(" a_1 b_2 ");
+        assertEquals(5, index.queryWordOffset("b_2"));
+    }
+
+    @Test
     public void should_return_the_index_of_last_word_with_commas_and_stops() throws Exception {
         SearchIndex index = searchService.parseText("a1, b2 c3.");
         assertEquals(7, index.queryWordOffset("c3"));

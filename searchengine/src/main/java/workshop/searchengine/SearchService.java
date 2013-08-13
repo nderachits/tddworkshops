@@ -24,11 +24,11 @@ public class SearchService {
     }
 
     private boolean isCharSeparator(char ch) {
-        return Character.isLetterOrDigit(ch) == false;
+        return Character.isLetterOrDigit(ch) == false && ch!='_';
     }
 
     private boolean isCharLetter(char ch) {
-        return Character.isLetterOrDigit(ch);
+        return Character.isLetterOrDigit(ch) || ch == '_';
     }
 
     private int findNextNonLetter(String text, int startingFrom) {

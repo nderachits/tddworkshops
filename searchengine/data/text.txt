@@ -1,0 +1,322 @@
+ searchengine/notes.txt                             |  4 ++
+ .../java/workshop/searchengine/SearchIndex.java    | 51 ++++++++++++++++++
+ .../java/workshop/searchengine/SearchService.java  | 53 +++++++++++++++++++
+ .../main/java/workshop/searchengine/app/App.java   | 16 ------
+ .../workshop/searchengine/SearchIndexTest.java     | 56 ++++++++++++++++++++
+ .../workshop/searchengine/SearchServiceTest.java   | 60 ++++++++++++++++++++++
+ .../java/workshop/searchengine/app/AppTest.java    | 30 -----------
+ 7 files changed, 224 insertions(+), 46 deletions(-)
+
+diff --git a/searchengine/notes.txt b/searchengine/notes.txt
+new file mode 100644
+index 0000000..ad0c755
+--- /dev/null
++++ b/searchengine/notes.txt
+@@ -0,0 +1,4 @@
++
++Index an input string by words
++
++2.5h
+\ No newline at end of file
+diff --git a/searchengine/src/main/java/workshop/searchengine/SearchIndex.java b/searchengine/src/main/java/workshop/searchengine/SearchIndex.java
+new file mode 100644
+index 0000000..cc0205b
+--- /dev/null
++++ b/searchengine/src/main/java/workshop/searchengine/SearchIndex.java
+@@ -0,0 +1,51 @@
++package workshop.searchengine;
++
++import java.util.ArrayList;
++import java.util.HashMap;
++import java.util.List;
++import java.util.Map;
++
++/**
++  * User: Mikalai_Dzerachyts
++ * Date: 8/9/13
++*/
++public class SearchIndex {
++
++    private final Map<String, List<Integer>> map = new HashMap<String, List<Integer>>();
++
++    public SearchIndex() {
++    }
++
++    public int queryWordOffset(String word) {
++        Integer[] result = queryWordOffsets(word);
++        if(result.length == 0) {
++            return -1;
++        }
++        return result[0];
++    }
++
++    public void addPair(String inputWord, int offset) {
++        List<Integer> offsets = map.get(inputWord);
++        if(offsets == null) {
++            offsets = emptyOffsetList();
++            map.put(inputWord, offsets);
++        }
++        offsets.add(offset);
++    }
++
++    private List<Integer> emptyOffsetList() {
++        return new ArrayList<Integer>();
++    }
++
++    public Integer[] queryWordOffsets(String word) {
++        List<Integer> offsets = map.get(word);
++        if(offsets == null) {
++            return emptyResult();
++        }
++        return offsets.toArray(new Integer[0]);
++    }
++
++    private Integer[] emptyResult() {
++        return new Integer[0];
++    }
++}
+diff --git a/searchengine/src/main/java/workshop/searchengine/SearchService.java b/searchengine/src/main/java/workshop/searchengine/SearchService.java
+new file mode 100644
+index 0000000..e7de925
+--- /dev/null
++++ b/searchengine/src/main/java/workshop/searchengine/SearchService.java
+@@ -0,0 +1,53 @@
++package workshop.searchengine;
++
++/**
++ * User: Mikalai_Dzerachyts
++ * Date: 8/9/13
++ */
++public class SearchService {
++
++    private static final int FIRST_SYMBOL_IN_TEXT = 0;
++    public SearchIndex parseText(String text) {
++        SearchIndex index =  new SearchIndex();
++
++
++        int letterIndex;
++        int wordEnd = FIRST_SYMBOL_IN_TEXT;
++        while((letterIndex = findNextLetter(text, wordEnd))
++                < text.length()) {
++            wordEnd = findNextNonLetter(text, letterIndex);
++            String word = text.substring(letterIndex, wordEnd);
++            index.addPair(word, letterIndex);
++        }
++
++        return index;
++    }
++
++    private boolean isCharSeparator(char ch) {
++        return Character.isLetterOrDigit(ch) == false;
++    }
++
++    private boolean isCharLetter(char ch) {
++        return Character.isLetterOrDigit(ch);
++    }
++
++    private int findNextNonLetter(String text, int startingFrom) {
++        int i = startingFrom;
++        for(; i < text.length(); ++i) {
++            if(isCharSeparator(text.charAt(i)) ) {
++                break;
++            }
++        }
++        return i;
++    }
++
++    private int findNextLetter(String text, int startingFrom) {
++        int i = startingFrom;
++        for(; i < text.length(); ++i) {
++            if(isCharLetter(text.charAt(i)) ) {
++                break;
++            }
++        }
++        return i;
++    }
++}
+diff --git a/searchengine/src/main/java/workshop/searchengine/app/App.java b/searchengine/src/main/java/workshop/searchengine/app/App.java
+deleted file mode 100644
+index 5a4f3c3..0000000
+--- a/searchengine/src/main/java/workshop/searchengine/app/App.java
++++ /dev/null
+@@ -1,16 +0,0 @@
+-package workshop.searchengine.app;
+-
+-/**
+- * Hello world!
+- *
+- */
+-public class App 
+-{
+-    public int mone() {
+-        return 1;
+-    }
+-    public static void main( String[] args )
+-    {
+-        System.out.println( "Hello World!" );
+-    }
+-}
+diff --git a/searchengine/src/test/java/workshop/searchengine/SearchIndexTest.java b/searchengine/src/test/java/workshop/searchengine/SearchIndexTest.java
+new file mode 100644
+index 0000000..3cce7d1
+--- /dev/null
++++ b/searchengine/src/test/java/workshop/searchengine/SearchIndexTest.java
+@@ -0,0 +1,56 @@
++package workshop.searchengine;
++
++import org.junit.Before;
++import org.junit.Test;
++import org.junit.runner.RunWith;
++import org.junit.runners.JUnit4;
++
++import static org.junit.Assert.assertArrayEquals;
++import static org.junit.Assert.assertEquals;
++
++/**
++ * User: Mikalai_Dzerachyts
++ * Date: 8/9/13
++ */
++@RunWith(JUnit4.class)
++public class SearchIndexTest {
++
++    private final String TEXT = "a b c!";
++
++    private SearchIndex index = new SearchIndex();
++
++    @Before
++    public void setUp() throws Exception {
++
++    }
++    @Test
++    public void should_store_index_data() throws Exception {
++
++        int inputOffset = 2;
++        String inputWord = "b";
++
++        index.addPair(inputWord, inputOffset);
++
++        assertEquals("text offset at result should the same as input data",
++                inputOffset, index.queryWordOffset(inputWord));
++    }
++
++    @Test
++    public void should_return_minus_one_when_word_not_found() throws Exception {
++
++        assertEquals(-1, index.queryWordOffset("z"));
++    }
++
++    @Test
++    public void should_store_many_words_in_index() throws Exception {
++        int firstOccurance = 2;
++        int secondOccurance = 5;
++        String word = "b";
++
++        index.addPair(word, firstOccurance);
++        index.addPair(word, secondOccurance);
++        Integer[] offsets = index.queryWordOffsets(word);
++        assertEquals("should be 2 occurances", 2, offsets.length );
++        assertArrayEquals("occurances should match", new Integer[]{firstOccurance, secondOccurance}, offsets);
++    }
++}
+diff --git a/searchengine/src/test/java/workshop/searchengine/SearchServiceTest.java b/searchengine/src/test/java/workshop/searchengine/SearchServiceTest.java
+new file mode 100644
+index 0000000..bedc5a6
+--- /dev/null
++++ b/searchengine/src/test/java/workshop/searchengine/SearchServiceTest.java
+@@ -0,0 +1,60 @@
++package workshop.searchengine;
++
++import org.junit.Before;
++import org.junit.Test;
++import org.junit.runner.RunWith;
++import org.junit.runners.JUnit4;
++import static org.junit.Assert.assertEquals;
++import static org.junit.Assert.assertNotNull;
++
++/**
++ * User: Mikalai_Dzerachyts
++ * Date: 8/9/13
++ */
++@RunWith(JUnit4.class)
++public class SearchServiceTest {
++
++    private SearchService searchService;
++
++    @Before
++    public void setUp() throws Exception {
++        searchService = new SearchService();
++    }
++
++    @Test
++    public void should_return_index_by_text() throws Exception {
++        SearchIndex index = searchService.parseText("a b c!");
++        assertNotNull("returned index should be not null SearchIndex instance", index);
++    }
++
++    @Test
++    public void should_return_zero_offset_when_text_equals_query_word() throws Exception {
++        SearchIndex index = searchService.parseText("a");
++        assertEquals(0, index.queryWordOffset("a"));
++    }
++
++    @Test
++    public void should_return_first_non_whitespace_word_surrunded_by_spaces() throws Exception {
++        SearchIndex index = searchService.parseText(" a ");
++        assertEquals(1, index.queryWordOffset("a"));
++    }
++
++    @Test
++    public void should_return_the_index_of_second_word() throws Exception {
++        SearchIndex index = searchService.parseText(" a b ");
++        assertEquals(3, index.queryWordOffset("b"));
++    }
++
++    @Test
++    public void should_return_the_index_of_last_word_with_commas_and_stops() throws Exception {
++        SearchIndex index = searchService.parseText("a1, b2 c3.");
++        assertEquals(7, index.queryWordOffset("c3"));
++    }
++
++    @Test
++    public void should_not_fail_when_empty_text() throws Exception {
++        SearchIndex index = searchService.parseText("");
++        assertEquals(-1, index.queryWordOffset("a"));
++    }
++
++}
+diff --git a/searchengine/src/test/java/workshop/searchengine/app/AppTest.java b/searchengine/src/test/java/workshop/searchengine/app/AppTest.java
+deleted file mode 100644
+index f8e21f5..0000000
+--- a/searchengine/src/test/java/workshop/searchengine/app/AppTest.java
++++ /dev/null
+@@ -1,30 +0,0 @@
+-package workshop.searchengine.app;
+-
+-
+-import org.junit.Before;
+-import org.junit.Test;
+-import org.junit.runner.RunWith;
+-import org.junit.runners.JUnit4;
+-import org.mockito.Mock;
+-import org.mockito.MockitoAnnotations;
+-import static org.junit.Assert.assertEquals;
+-
+-@RunWith(JUnit4.class)
+-public class AppTest{
+-
+-    @Mock App mock;
+-
+-    App app = new App();
+-
+-   @Before
+-    public void setUp() {
+-        MockitoAnnotations.initMocks(this);
+-    }
+-
+-    @Test
+-    public void testApp()
+-    {
+-        assertEquals(1, app.mone());
+-        assertEquals(0, mock.mone());
+-    }
+-}

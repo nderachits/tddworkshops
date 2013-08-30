@@ -8,11 +8,11 @@ import workshop.StockExchange;
  * User: Mikalai_Dzerachyts
  * Date: 8/30/13
  */
-public class PerformaceTest {
+public class PerformanceTest {
     @Test
     public void testExchangePerformanceOnRandomData() throws Exception {
 
-        int numOfOrders = 10000;
+        int numOfOrders = 1000;
 
         long startTime = System.currentTimeMillis();
 

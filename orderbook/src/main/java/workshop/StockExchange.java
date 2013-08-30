@@ -7,5 +7,5 @@ package workshop;
 public interface StockExchange {
 
     Integer place(String buyOrSell, int amount);
-    boolean isOrderFilled(Integer orderId);
+    String getOrderState(Integer orderId);
 }

@@ -34,7 +34,7 @@ public class SimpleStockExchange implements StockExchange {
                 if(!order2.getOrderState().equals(ORDER_PLACED)) {
                     continue;
                 }
-                if( !order1.getBuyOrSell().equals(order2.getBuyOrSell()) ||
+                if( !order1.getBuyOrSell().equals(order2.getBuyOrSell()) &&
                         order1.getAmount() == order2.getAmount()) {
                     matchOrders(order1, order2);
                 }
@@ -48,12 +48,12 @@ public class SimpleStockExchange implements StockExchange {
     }
 
     @Override
-    public boolean isOrderFilled(Integer orderId) {
+    public String getOrderState(Integer orderId) {
         for (Order order : orders) {
             if (order.getId().equals(orderId)) {
-                return order.getOrderState().equals(ORDER_FILLED);
+                return order.getOrderState();
             }
         }
-        return false;
+        throw new OrderNotFoundException(orderId);
     }
 }

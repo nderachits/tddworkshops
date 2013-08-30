@@ -13,7 +13,7 @@ public class ExchangeTest {
     @Test
     public void shouldPlaceAndReturnId() throws Exception {
 
-        StockExchange exchange = new StockExchange();
+        StockExchange exchange = new SimpleStockExchange();
         Integer buyOrder = exchange.place("buy", 1);
         assertFalse(exchange.isOrderFilled(buyOrder));
         assertNotNull(buyOrder);

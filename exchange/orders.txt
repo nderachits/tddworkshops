@@ -1,0 +1,9 @@
+
+Simple Order
+Market Order
+Limit Order
+Stop Order
+
+
+2 ordered arrays: one for buy and the other for sell orders
+

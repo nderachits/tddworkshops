@@ -1,6 +1,5 @@
 package workshop.exchange;
 
-import java.awt.RadialGradientPaint;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,13 +9,13 @@ public class Exchange {
 
 	private int orderId;
 
-	private Map<Integer, Order> ordersToBuy = new HashMap<>();
-	private Map<Integer, Order> ordersToSell = new HashMap<>();
+	private Map<Integer, Order> ordersToBuy = new HashMap<Integer, Order>();
+	private Map<Integer, Order> ordersToSell = new HashMap<Integer, Order>();
 
 	public Integer placeOrder(OrderType orderType, double price, int amount) {
 		int orderId = getNewOrderId();
 		
-		Map<Integer, Order> ordersToMatch = new HashMap<>();
+		Map<Integer, Order> ordersToMatch = new HashMap<Integer, Order>();
 		Order orderToPlace = createPlacedOrder(price, amount);
 		
 		if (orderType.equals(OrderType.BUY)) {

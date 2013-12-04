@@ -10,7 +10,6 @@ public class SearchService {
     public SearchIndex parseText(String text) {
         SearchIndex index =  new SearchIndex();
 
-
         int letterIndex;
         int wordEnd = FIRST_SYMBOL_IN_TEXT;
         while((letterIndex = findNextLetter(text, wordEnd))

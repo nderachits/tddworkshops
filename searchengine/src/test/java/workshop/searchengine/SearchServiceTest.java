@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -11,7 +13,6 @@ import static org.junit.Assert.assertNotNull;
  * User: Mikalai_Dzerachyts
  * Date: 8/9/13
  */
-@RunWith(JUnit4.class)
 public class SearchServiceTest {
 
     private SearchService searchService;
@@ -63,4 +64,21 @@ public class SearchServiceTest {
         assertEquals(-1, index.queryWordOffset("a"));
     }
 
+    @Test
+    public void shouldFindSimilarWord() throws Exception {
+        SearchIndex index = searchService.parseText("abc");
+        assertArrayEquals(new String[]{"abc"}, index.querySimilarWordOffset("ab"));
+    }
+
+    @Test
+    public void shouldFindTwoSimilarWords() throws Exception {
+        SearchIndex index = searchService.parseText("abcde abcxxe abxe xabde abc");
+        assertArrayEquals(new String[]{"abcde", "xabde", "abxe"}, index.querySimilarWordOffset("abde"));
+    }
+
+    @Test
+    public void shouldNotFindWordWith2fifferentChars() throws Exception {
+        SearchIndex index = searchService.parseText("abc");
+        assertArrayEquals(new String[]{}, index.querySimilarWordOffset("a"));
+    }
 }

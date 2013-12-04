@@ -15,7 +15,6 @@ import java.io.FileReader;
  * User: Mikalai_Dzerachyts
  * Date: 8/13/13
  */
-@RunWith(JUnit4.class)
 public class PerfomanceDemoTest {
 
     SearchService searchService;

@@ -21,7 +21,6 @@ public class SearchIndexTest {
 
     @Before
     public void setUp() throws Exception {
-
     }
     @Test
     public void should_store_index_data() throws Exception {

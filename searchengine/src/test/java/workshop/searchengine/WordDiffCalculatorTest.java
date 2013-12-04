@@ -40,4 +40,14 @@ public class WordDiffCalculatorTest {
     public void shouldReturnTwoDiffInTwoPlaces() throws Exception {
         assertEquals(2, new WordDiffCalculator("a1bc2d", "abcd").calculate());
     }
+
+    @Test
+    public void shouldReturn3WhenLengthDiffersBy3AndTargetLengthIs1() throws Exception {
+        assertEquals(3, new WordDiffCalculator("bcbc","c").calculate());
+    }
+
+    @Test
+    public void shouldReturn3WhenLengthDiffersBy3AndSourceLengthIs1() throws Exception {
+        assertEquals(3, new WordDiffCalculator("a","aaaa").calculate());
+    }
 }

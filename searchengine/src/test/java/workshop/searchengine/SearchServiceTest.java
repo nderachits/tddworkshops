@@ -5,9 +5,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import static org.junit.Assert.assertArrayEquals;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * User: Mikalai_Dzerachyts
@@ -67,18 +69,26 @@ public class SearchServiceTest {
     @Test
     public void shouldFindSimilarWord() throws Exception {
         SearchIndex index = searchService.parseText("abc");
-        assertArrayEquals(new String[]{"abc"}, index.querySimilarWordOffset("ab"));
+        List<String> foundWords = index.querySimilarWordOffset("ab");
+        assertEquals(1, foundWords.size());
+        assertTrue(foundWords.contains("abc"));
     }
 
     @Test
     public void shouldFindTwoSimilarWords() throws Exception {
         SearchIndex index = searchService.parseText("abcde abcxxe abxe xabde abc");
-        assertArrayEquals(new String[]{"abcde", "xabde", "abxe"}, index.querySimilarWordOffset("abde"));
+        List<String> foundWords = index.querySimilarWordOffset("abde");
+        String[] expectedWords = new String[]{"abcde", "xabde", "abxe"};
+        assertEquals(expectedWords.length, foundWords.size());
+        assertTrue(foundWords.contains(expectedWords[0]));
+        assertTrue(foundWords.contains(expectedWords[1]));
+        assertTrue(foundWords.contains(expectedWords[2]));
     }
 
     @Test
     public void shouldNotFindWordWith2fifferentChars() throws Exception {
         SearchIndex index = searchService.parseText("abc");
-        assertArrayEquals(new String[]{}, index.querySimilarWordOffset("a"));
+        List<String> foundWords = index.querySimilarWordOffset("a");
+        assertEquals(0, foundWords.size());
     }
 }

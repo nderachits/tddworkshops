@@ -41,7 +41,7 @@ public class SearchIndex {
         return new Integer[0];
     }
 
-    public String[] querySimilarWordOffset(String searchWord) {
+    public List<String> querySimilarWordOffset(String searchWord) {
         List<String> words = new ArrayList<String>();
         for (Iterator<Map.Entry<String, List<Integer>>>
                 iterator = map.entrySet().iterator(); iterator.hasNext(); ) {
@@ -51,7 +51,7 @@ public class SearchIndex {
                 words.add(word);
             }
         }
-        return words.toArray(new String[0]);
+        return words;
     }
 
     private boolean wordsAreSimilar(String searchWord, String word) {

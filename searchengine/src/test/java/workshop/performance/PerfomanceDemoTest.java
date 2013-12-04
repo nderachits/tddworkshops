@@ -1,9 +1,8 @@
-package workshop.searchengine.perf;
+package workshop.performance;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+
 import static org.junit.Assert.assertEquals;
 import workshop.searchengine.SearchIndex;
 import workshop.searchengine.SearchService;

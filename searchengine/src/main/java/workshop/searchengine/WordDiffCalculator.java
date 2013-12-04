@@ -18,8 +18,24 @@ public class WordDiffCalculator {
 
     public int calculate() {
 
+        boolean charMatched = false;
         for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[0].length; j++) {
+            if(wordSource.charAt(i) == wordTarget.charAt(0)) {
+                charMatched = true;
+            }
+            matrix[i][0] = charMatched ? i : i + 1;
+        }
+
+        charMatched = false;
+        for (int j = 1; j < matrix[0].length; j++) {
+            if(wordSource.charAt(0) == wordTarget.charAt(j)) {
+                charMatched = true;
+            }
+            matrix[0][j] = charMatched ? j : j + 1;
+        }
+
+        for (int i = 1; i < matrix.length; i++) {
+            for (int j = 1; j < matrix[0].length; j++) {
                 matrix[i][j] = calculateDiffNumberForCell(i, j);
             }
         }
@@ -28,28 +44,13 @@ public class WordDiffCalculator {
     }
 
     private int calculateDiffNumberForCell(int i, int j) {
-        int changesToMatch = Math.max(wordSource.length(), wordTarget.length());
+        int changesToMatch;
 
-        if( i == 0 && j == 0) {
-            changesToMatch = 0;
-            if(wordSource.charAt(i) != wordTarget.charAt(j)) {
-                changesToMatch++;
-            }
-        }
+        changesToMatch = Math.min(matrix[i][j-1], matrix[i-1][j]);
+        changesToMatch = Math.min(changesToMatch, matrix[i-1][j-1]);
 
-        if ( j > 0) {
-            changesToMatch = matrix[i][j-1] + 1;
-        }
-        if ( i > 0) {
-            changesToMatch = Math.min(changesToMatch, matrix[i-1][j] + 1);
-        }
-
-        if( i > 0 && j > 0) {
-            int previousByDiagonal = matrix[i-1][j-1];
-            if(wordSource.charAt(i) != wordTarget.charAt(j)) {
-                previousByDiagonal++;
-            }
-            changesToMatch = Math.min(changesToMatch, previousByDiagonal);
+        if(wordSource.charAt(i) != wordTarget.charAt(j)) {
+            changesToMatch++;
         }
 
         return changesToMatch;

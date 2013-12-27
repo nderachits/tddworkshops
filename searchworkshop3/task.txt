@@ -1,0 +1,17 @@
+
+			TDD Workshop - Simple Search Engine
+
+As a developer I want a component that can index big documents and provide searching by a query string so I can use it as a search engine for files, documents or web pages
+
+Input: a string or file, string is simpler
+Output: a component that can return index of word in scanned text without rescanning.
+Output 2: returns sentence with the word.
+Output 3: returns similar word or sentence when there is no precise match, but words differs by 1 letter.
+
+Test data: source code of Rails in a single file 11.8mb, will be provided.
+Test word example "ISINDEX" case-sensitive, appears in the end of the file, test repeats 200times
+
+words consists from letters, numbers and underscore _
+case-sensitive is simpler, case-insensitive if there more time
+commas, stops, columns are separators
+

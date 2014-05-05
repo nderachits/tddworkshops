@@ -6,35 +6,35 @@ package workshop;
  */
 class Order {
     private Integer id;
-    private String buyOrSell;
+    private Direction buyOrSell;
     private int amount;
-    private String orderState;
+    private OrderState orderState;
 
 
-    public Order(Integer id, String buyOrSell, int amount) {
+    public Order(Integer id, Direction buyOrSell, int amount) {
         this.id = id;
         this.buyOrSell = buyOrSell;
         this.amount = amount;
-        this.orderState = "placed";
+        this.orderState = OrderState.PLACED;
     }
 
-    String getBuyOrSell() {
+    public Direction getBuyOrSell() {
         return buyOrSell;
     }
 
-    int getAmount() {
+    public int getAmount() {
         return amount;
     }
 
-    String getOrderState() {
+    public OrderState getOrderState() {
         return orderState;
     }
 
-    void setOrderState(String orderState) {
+    public void setOrderState(OrderState orderState) {
         this.orderState = orderState;
     }
 
-    Integer getId() {
+    public Integer getId() {
         return id;
     }
 }

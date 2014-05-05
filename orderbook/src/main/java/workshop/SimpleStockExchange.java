@@ -9,14 +9,12 @@ import java.util.List;
  */
 public class SimpleStockExchange implements StockExchange {
 
-    public static final String ORDER_PLACED = "placed";
-    public static final String ORDER_FILLED = "filled";
     private int nextOrderId = 1;
 
     List<Order> orders = new ArrayList<Order>();
 
     @Override
-    public Integer place(String buyOrSell, int amount) {
+    public Integer place(Direction buyOrSell, int amount) {
         Order order = new Order(nextOrderId++, buyOrSell, amount);
         orders.add(order);
         fillOrders();
@@ -26,12 +24,12 @@ public class SimpleStockExchange implements StockExchange {
     private void fillOrders() {
         for (int i = 0; i < orders.size() - 1; i++) {
             Order order1 = orders.get(i);
-            if(!order1.getOrderState().equals(ORDER_PLACED)) {
+            if(!order1.getOrderState().equals(OrderState.PLACED)) {
                 continue;
             }
             for (int j = i + 1; j < orders.size(); j++) {
                 Order order2 = orders.get(j);
-                if(!order2.getOrderState().equals(ORDER_PLACED)) {
+                if(!order2.getOrderState().equals(OrderState.PLACED)) {
                     continue;
                 }
                 if( !order1.getBuyOrSell().equals(order2.getBuyOrSell()) &&
@@ -43,12 +41,12 @@ public class SimpleStockExchange implements StockExchange {
     }
 
     private void matchOrders(Order order1, Order order2) {
-        order1.setOrderState(ORDER_FILLED);
-        order2.setOrderState(ORDER_FILLED);
+        order1.setOrderState(OrderState.FILLED);
+        order2.setOrderState(OrderState.FILLED);
     }
 
     @Override
-    public String getOrderState(Integer orderId) {
+    public OrderState getOrderState(Integer orderId) {
         for (Order order : orders) {
             if (order.getId().equals(orderId)) {
                 return order.getOrderState();

@@ -21,13 +21,13 @@ public class ExchangeTest {
     @Test
     public void shouldPlaceAndReturnId() throws Exception {
 
-        Integer buyOrder = exchange.place("buy", 1);
-        assertEquals("placed", exchange.getOrderState(buyOrder));
+        Integer buyOrder = exchange.place(Direction.BUY, 1);
+        assertEquals(OrderState.PLACED, exchange.getOrderState(buyOrder));
         assertNotNull(buyOrder);
-        Integer sellOrder = exchange.place("sell", 1);
+        Integer sellOrder = exchange.place(Direction.SELL, 1);
         assertNotEquals(sellOrder, buyOrder);
-        assertEquals("filled", exchange.getOrderState(buyOrder));
-        assertEquals("filled", exchange.getOrderState(sellOrder));
+        assertEquals(OrderState.FILLED, exchange.getOrderState(buyOrder));
+        assertEquals(OrderState.FILLED, exchange.getOrderState(sellOrder));
     }
 
     @Test(expected = OrderNotFoundException.class)
@@ -38,17 +38,17 @@ public class ExchangeTest {
     @Test
     public void shouldBeFilledInOrder() throws Exception {
 
-        exchange.place("buy", 1);
-        Integer secondBuyId = exchange.place("buy", 1);
-        exchange.place("sell", 1);
-        assertEquals("Second Buy order should be left not filled", "placed", exchange.getOrderState(secondBuyId));
+        exchange.place(Direction.BUY, 1);
+        Integer secondBuyId = exchange.place(Direction.BUY, 1);
+        exchange.place(Direction.SELL, 1);
+        assertEquals("Second Buy order should be left not filled", OrderState.PLACED, exchange.getOrderState(secondBuyId));
     }
 
     @Test
     public void shouldNotBeFilledTheSameOrderTwice() throws Exception {
-        exchange.place("buy", 1);
-        exchange.place("sell", 1);
-        Integer secondSellId = exchange.place("sell", 1);
-        assertEquals("The second Sell order should be left unfilled", "placed", exchange.getOrderState(secondSellId));
+        exchange.place(Direction.BUY, 1);
+        exchange.place(Direction.SELL, 1);
+        Integer secondSellId = exchange.place(Direction.SELL, 1);
+        assertEquals("The second Sell order should be left unfilled", OrderState.PLACED, exchange.getOrderState(secondSellId));
     }
 }

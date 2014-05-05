@@ -1,6 +1,7 @@
 package workshop.perf;
 
 import org.junit.Test;
+import workshop.Direction;
 import workshop.SimpleStockExchange;
 import workshop.StockExchange;
 
@@ -19,11 +20,11 @@ public class PerformanceTest {
         StockExchange exchange = new SimpleStockExchange();
 
         for (int i = 0; i < numOfOrders; i++) {
-             exchange.place("buy", 1);
+             exchange.place(Direction.BUY, 1);
         }
 
         for (int i = 0; i < numOfOrders; i++) {
-            exchange.place("sell", 1);
+            exchange.place(Direction.SELL, 1);
         }
 
         float deltaTimeBroot = (System.currentTimeMillis() - startTime) / 1000f;

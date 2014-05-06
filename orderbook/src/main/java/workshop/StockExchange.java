@@ -6,6 +6,6 @@ package workshop;
  */
 public interface StockExchange {
 
-    Integer place(Direction buyOrSell, int amount);
+    Integer place(Direction buyOrSell, int amount, double price);
     OrderState getOrderState(Integer orderId);
 }

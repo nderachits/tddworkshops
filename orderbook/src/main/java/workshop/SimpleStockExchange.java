@@ -14,8 +14,8 @@ public class SimpleStockExchange implements StockExchange {
     List<Order> orders = new ArrayList<Order>();
 
     @Override
-    public Integer place(Direction buyOrSell, int amount) {
-        Order order = new Order(nextOrderId++, buyOrSell, amount);
+    public Integer place(Direction buyOrSell, int amount, double price) {
+        Order order = new Order(nextOrderId++, buyOrSell, amount, price);
         orders.add(order);
         tryToFillOrder(order);
         return order.getId();
@@ -37,12 +37,25 @@ public class SimpleStockExchange implements StockExchange {
             return false;
         }
 
-        if( !order.getBuyOrSell().equals(candidate.getBuyOrSell()) &&
-                order.getAmount() == candidate.getAmount()) {
-            return true;
+        if( order.getBuyOrSell().equals(candidate.getBuyOrSell())) {
+            return false;
         }
 
-        return false;
+        if( order.getAmount() != candidate.getAmount()) {
+            return false;
+        }
+
+        Order sellOrder = candidate;
+        Order buyOrder = order;
+        if(sellOrder.getBuyOrSell() != Direction.SELL) {
+            sellOrder = order;
+            buyOrder = candidate;
+        }
+        if(sellOrder.getPrice() > buyOrder.getPrice()) {
+            return false;
+        }
+
+        return true;
 
     }
 

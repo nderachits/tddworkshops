@@ -1,4 +1,4 @@
-package workshop.perf;
+package performance;
 
 import org.junit.Test;
 import workshop.Direction;

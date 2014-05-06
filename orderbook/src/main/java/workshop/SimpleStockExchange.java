@@ -17,27 +17,33 @@ public class SimpleStockExchange implements StockExchange {
     public Integer place(Direction buyOrSell, int amount) {
         Order order = new Order(nextOrderId++, buyOrSell, amount);
         orders.add(order);
-        fillOrders();
+        tryToFillOrder(order);
         return order.getId();
     }
 
-    private void fillOrders() {
-        for (int i = 0; i < orders.size() - 1; i++) {
-            Order order1 = orders.get(i);
-            if(!order1.getOrderState().equals(OrderState.PLACED)) {
-                continue;
-            }
-            for (int j = i + 1; j < orders.size(); j++) {
-                Order order2 = orders.get(j);
-                if(!order2.getOrderState().equals(OrderState.PLACED)) {
-                    continue;
-                }
-                if( !order1.getBuyOrSell().equals(order2.getBuyOrSell()) &&
-                        order1.getAmount() == order2.getAmount()) {
-                    matchOrders(order1, order2);
-                }
+    private void tryToFillOrder(Order order) {
+        for (Order candidate : orders) {
+
+            if(isAMatch(order, candidate)) {
+                matchOrders(order, candidate);
+                break;
             }
         }
+    }
+
+    private boolean isAMatch(Order order, Order candidate) {
+        if(order.getOrderState() != OrderState.PLACED ||
+                candidate.getOrderState() != OrderState.PLACED) {
+            return false;
+        }
+
+        if( !order.getBuyOrSell().equals(candidate.getBuyOrSell()) &&
+                order.getAmount() == candidate.getAmount()) {
+            return true;
+        }
+
+        return false;
+
     }
 
     private void matchOrders(Order order1, Order order2) {

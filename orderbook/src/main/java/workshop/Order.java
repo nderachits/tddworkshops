@@ -6,6 +6,7 @@ package workshop;
  */
 class Order {
     private final double price;
+    private double fillPrice;
     private Integer id;
     private final Direction buyOrSell;
     private int amount;
@@ -42,5 +43,13 @@ class Order {
 
     public double getPrice() {
         return price;
+    }
+
+    double getFillPrice() {
+        return fillPrice;
+    }
+
+    void setFillPrice(double fillPrice) {
+        this.fillPrice = fillPrice;
     }
 }

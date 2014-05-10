@@ -60,15 +60,31 @@ public class SimpleStockExchange implements StockExchange {
     }
 
     private void matchOrders(Order order1, Order order2) {
+        Order sellOrder = order1;
+        Order buyOrder = order2;
+        if(sellOrder.getBuyOrSell() != Direction.SELL) {
+            sellOrder = order2;
+            buyOrder = order1;
+        }
+        double fillPrice = sellOrder.getPrice();
+        sellOrder.setFillPrice(fillPrice);
+        buyOrder.setFillPrice(fillPrice);
+
         order1.setOrderState(OrderState.FILLED);
         order2.setOrderState(OrderState.FILLED);
     }
 
     @Override
-    public OrderState getOrderState(Integer orderId) {
+    public OrderView getOrderStateObject(int orderId) {
+        Order internalOrder = orderById(orderId);
+        return new OrderView(orderId, internalOrder.getOrderState(),
+                internalOrder.getFillPrice());
+    }
+
+    private Order orderById(int orderId) {
         for (Order order : orders) {
             if (order.getId().equals(orderId)) {
-                return order.getOrderState();
+                return order;
             }
         }
         throw new OrderNotFoundException(orderId);

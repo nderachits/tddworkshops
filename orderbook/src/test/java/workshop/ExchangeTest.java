@@ -11,6 +11,7 @@ import static org.junit.Assert.*;
  */
 public class ExchangeTest {
 
+    public static final double DELTA = 0.0001;
     private StockExchange exchange;
 
     @Before
@@ -22,17 +23,20 @@ public class ExchangeTest {
     public void shouldPlaceAndReturnId() throws Exception {
 
         Integer buyOrder = exchange.place(Direction.BUY, 1, 5.0);
-        assertEquals(OrderState.PLACED, exchange.getOrderState(buyOrder));
+        OrderView buyOrderView = exchange.getOrderStateObject(buyOrder);
+        assertEquals(OrderState.PLACED, buyOrderView.getOrderState());
         assertNotNull(buyOrder);
+        assertEquals(buyOrder.intValue(), buyOrderView.getOrderId());
+
         Integer sellOrder = exchange.place(Direction.SELL, 1, 5.0);
         assertNotEquals(sellOrder, buyOrder);
-        assertEquals(OrderState.FILLED, exchange.getOrderState(buyOrder));
-        assertEquals(OrderState.FILLED, exchange.getOrderState(sellOrder));
+        assertEquals(OrderState.FILLED, exchange.getOrderStateObject(buyOrder).getOrderState());
+        assertEquals(OrderState.FILLED, exchange.getOrderStateObject(sellOrder).getOrderState());
     }
 
     @Test(expected = OrderNotFoundException.class)
     public void shouldThrowOrderNotFoundWhenOrderNotPlaced() throws Exception {
-        exchange.getOrderState(-1);
+        exchange.getOrderStateObject(-1);
     }
 
     @Test
@@ -41,7 +45,7 @@ public class ExchangeTest {
         exchange.place(Direction.BUY, 1, 5.0);
         Integer secondBuyId = exchange.place(Direction.BUY, 1, 5.0);
         exchange.place(Direction.SELL, 1, 5.0);
-        assertEquals("Second Buy order should be left not filled", OrderState.PLACED, exchange.getOrderState(secondBuyId));
+        assertEquals("Second Buy order should be left not filled", OrderState.PLACED, exchange.getOrderStateObject(secondBuyId).getOrderState());
     }
 
     @Test
@@ -49,7 +53,7 @@ public class ExchangeTest {
         exchange.place(Direction.BUY, 1, 5.0);
         exchange.place(Direction.SELL, 1, 5.0);
         Integer secondSellId = exchange.place(Direction.SELL, 1, 5.0);
-        assertEquals("The second Sell order should be left unfilled", OrderState.PLACED, exchange.getOrderState(secondSellId));
+        assertEquals("The second Sell order should be left unfilled", OrderState.PLACED, exchange.getOrderStateObject(secondSellId).getOrderState());
     }
 
     @Test
@@ -58,8 +62,11 @@ public class ExchangeTest {
         Integer buyOrderId = exchange.place(Direction.SELL, 1, 6.0);
         Integer sellOrderId = exchange.place(Direction.BUY, 1, 5.0);
 
-        assertEquals(OrderState.PLACED, exchange.getOrderState(buyOrderId));
-        assertEquals(OrderState.PLACED, exchange.getOrderState(sellOrderId));
+        OrderView buyOrder =  exchange.getOrderStateObject(buyOrderId);
+        OrderView sellOrder =  exchange.getOrderStateObject(sellOrderId);
+
+        assertEquals(OrderState.PLACED, buyOrder.getOrderState());
+        assertEquals(OrderState.PLACED, sellOrder.getOrderState());
 
     }
 
@@ -69,8 +76,54 @@ public class ExchangeTest {
         Integer sellOrderId = exchange.place(Direction.BUY, 1, 5.0);
         Integer buyOrderId = exchange.place(Direction.SELL, 1, 6.0);
 
-        assertEquals(OrderState.PLACED, exchange.getOrderState(buyOrderId));
-        assertEquals(OrderState.PLACED, exchange.getOrderState(sellOrderId));
+        OrderView sellOrder =  exchange.getOrderStateObject(sellOrderId);
+        OrderView buyOrder =  exchange.getOrderStateObject(buyOrderId);
+
+        assertEquals(OrderState.PLACED, buyOrder.getOrderState());
+        assertEquals(OrderState.PLACED, sellOrder.getOrderState());
+
+    }
+
+    @Test
+    public void shouldFillOrdersWithLowestPrice() throws Exception {
+        Integer sellOrderId = exchange.place(Direction.BUY, 1, 6.0);
+        Integer buyOrderId = exchange.place(Direction.SELL, 1, 5.0);
+
+        OrderView sellOrder =  exchange.getOrderStateObject(sellOrderId);
+        OrderView buyOrder =  exchange.getOrderStateObject(buyOrderId);
+
+        assertEquals(OrderState.FILLED, buyOrder.getOrderState());
+        assertEquals(OrderState.FILLED, sellOrder.getOrderState());
+        assertEquals(5.0, sellOrder.getFillPrice(), DELTA);
+        assertEquals(5.0, buyOrder.getFillPrice(), DELTA);
+
+    }
+
+    @Test
+    public void shouldFillOrdersWithLowestPriceAnotherOrder() throws Exception {
+        Integer buyOrderId = exchange.place(Direction.SELL, 1, 5.0);
+        Integer sellOrderId = exchange.place(Direction.BUY, 1, 6.0);
+
+        OrderView sellOrder =  exchange.getOrderStateObject(sellOrderId);
+        OrderView buyOrder =  exchange.getOrderStateObject(buyOrderId);
+
+        assertEquals(OrderState.FILLED, buyOrder.getOrderState());
+        assertEquals(OrderState.FILLED, sellOrder.getOrderState());
+        assertEquals(5.0, sellOrder.getFillPrice(), DELTA);
+        assertEquals(5.0, buyOrder.getFillPrice(), DELTA);
+
+    }
+
+    @Test
+    public void shouldNotMatchOrdersWithDifferentAmount() throws Exception {
+        Integer buyOrderId = exchange.place(Direction.SELL, 2, 5.0);
+        Integer sellOrderId = exchange.place(Direction.BUY, 1, 6.0);
+
+        OrderView sellOrder =  exchange.getOrderStateObject(sellOrderId);
+        OrderView buyOrder =  exchange.getOrderStateObject(buyOrderId);
+
+        assertEquals(OrderState.PLACED, buyOrder.getOrderState());
+        assertEquals(OrderState.PLACED, sellOrder.getOrderState());
 
     }
 }

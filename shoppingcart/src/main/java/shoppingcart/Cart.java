@@ -9,27 +9,23 @@ import java.util.List;
  */
 public class Cart {
 
-    private List<Integer> products = new ArrayList();
+    private List<CartItem> items = new ArrayList();
     private PriceService priceService;
 
     public Cart() {
     }
 
-    public void addProductId(int productId) {
-        products.add(productId);
-    }
-
-
-    public Integer[] getProducts() {
-        return products.toArray(new Integer[0]);
+    public void addProductId(int productId, int quantity) {
+        items.add(new CartItem(productId, quantity));
     }
 
     public Double calculateTotalPrice() {
         Double sum = 0d;
-        for (int i = 0; i < products.size(); i++) {
-            Integer productId = products.get(i);
-            sum += priceService.findPrice(productId);
+        for (int i = 0; i < items.size(); i++) {
+            CartItem item = items.get(i);
+            sum += priceService.findPrice(item.getProductCode()) * item.getQuantity();
         }
+
         return sum;
     }
 
@@ -37,9 +33,11 @@ public class Cart {
         this.priceService = priceService;
     }
 
-    public void addProduct(int productId, int quantity) {
-        for(int i = 0; i< quantity; i++) {
-            products.add(productId);
-        }
+    public int getItemsSize() {
+        return items.size();
+    }
+
+    public int getProductCode(int i) {
+        return items.get(i).getProductCode();
     }
 }

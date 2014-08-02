@@ -14,16 +14,25 @@ public class CartTest {
     @Test
     public void productIdShouldBeAddedToCart() throws Exception {
         Cart cart = new Cart();
-        cart.addProductId(42);
-        assertArrayEquals(new Integer[]{42}, cart.getProducts());
+        cart.addProductId(42, 1);
+        assertEquals(1, cart.getItemsSize());
+        assertEquals(42, cart.getProductCode(0));
     }
 
     @Test
     public void twoProductsShouldBeAddedToCart() throws Exception {
         Cart cart = new Cart();
-        cart.addProductId(1);
-        cart.addProductId(42);
-        assertArrayEquals(new Integer[]{1, 42}, cart.getProducts());
+        cart.addProductId(1, 1);
+        cart.addProductId(42, 1);
+        assertEquals(2, cart.getItemsSize());
+        assertEquals(1, cart.getProductCode(0));
+        assertEquals(42, cart.getProductCode(1));
+    }
+
+    @Test
+    public void newCartShouldBeEmpty() throws Exception {
+        Cart cart = new Cart();
+        assertEquals(0, cart.getItemsSize());
     }
 
     @Test
@@ -35,8 +44,8 @@ public class CartTest {
         priceService.setPrice(Integer.valueOf(1), 19.0d);
         cart.setPriceService(priceService);
 
-        cart.addProductId(1);
-        cart.addProductId(42);
+        cart.addProductId(1, 1);
+        cart.addProductId(42, 1);
         assertEquals(Double.valueOf(68.5d), cart.calculateTotalPrice());
     }
 
@@ -47,7 +56,7 @@ public class CartTest {
         priceService.setPrice(Integer.valueOf(42), 49.5d);
         cart.setPriceService(priceService);
 
-        cart.addProduct(42, 2);
+        cart.addProductId(42, 2);
         assertEquals(Double.valueOf(49.5 * 2), cart.calculateTotalPrice());
     }
 }

@@ -2,9 +2,7 @@ package shoppingcart;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 /**
  * User: Mikalai_Dzerachyts
@@ -39,24 +37,58 @@ public class CartTest {
     public void shouldReturnPriceOfCart() throws Exception {
 
         SimpleCart cart = new SimpleCart();
-        PriceService priceService = new PriceService();
-        priceService.setPrice(Integer.valueOf(42), 49.5d);
-        priceService.setPrice(Integer.valueOf(1), 19.0d);
-        cart.setPriceService(priceService);
+        cart.setPriceService(buildPriceService());
 
         cart.addToCart(1, 1);
         cart.addToCart(42, 1);
         assertEquals(Double.valueOf(68.5d), cart.calculateTotalPrice());
     }
 
+    private PriceService buildPriceService() {
+        PriceService priceService = new PriceService();
+        priceService.setPrice(Integer.valueOf(42), 49.5d);
+        priceService.setPrice(Integer.valueOf(1), 19.0d);
+        return priceService;
+    }
+
     @Test
     public void productWithQuantityShouldBeCountedCorrectly() throws Exception {
         SimpleCart cart = new SimpleCart();
-        PriceService priceService = new PriceService();
-        priceService.setPrice(Integer.valueOf(42), 49.5d);
-        cart.setPriceService(priceService);
+        cart.setPriceService(buildPriceService());
 
         cart.addToCart(42, 2);
         assertEquals(Double.valueOf(49.5 * 2), cart.calculateTotalPrice());
+    }
+
+    @Test
+    public void productItemShouldBeUpdated() throws Exception {
+        SimpleCart cart = new SimpleCart();
+        cart.setPriceService(buildPriceService());
+        cart.addToCart(1, 1);
+        cart.addToCart(42, 4);
+        cart.updateItem(42, 3);
+        assertEquals(Double.valueOf(49.5 * 3 + 19.0), cart.calculateTotalPrice());
+        assertEquals(2, cart.getItemsSize());
+    }
+
+    @Test
+    public void itemShouldBeDeletedWhenQuantitySetToZero() throws Exception {
+        SimpleCart cart = new SimpleCart();
+        cart.setPriceService(buildPriceService());
+        cart.addToCart(42, 4);
+        cart.addToCart(1, 1);
+        cart.updateItem(42, 0);
+        assertEquals(1, cart.getItemsSize());
+        assertEquals(Double.valueOf(19.0d), cart.calculateTotalPrice());
+    }
+
+    @Test
+    public void quantityShouldBeIncreasedWhenAddingAlreadyPlacedProduct() throws Exception {
+        SimpleCart cart = new SimpleCart();
+        cart.setPriceService(buildPriceService());
+        cart.addToCart(42, 2);
+        cart.addToCart(42, 1);
+        assertEquals(Double.valueOf(49.5d * 3), cart.calculateTotalPrice());
+        assertEquals(1, cart.getItemsSize());
     }
 }

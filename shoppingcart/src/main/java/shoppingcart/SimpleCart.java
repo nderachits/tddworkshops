@@ -9,15 +9,21 @@ import java.util.List;
  */
 public class SimpleCart implements Cart {
 
-    private List<CartItem> items = new ArrayList();
+    private List<CartItem> items = new ArrayList<CartItem>();
     private PriceService priceService;
 
     public SimpleCart() {
     }
 
     @Override
-    public void addToCart(int productId, int quantity) {
-        items.add(new CartItem(productId, quantity));
+    public void addToCart(int productCode, int quantityToAdd) {
+        int productItemFound = findCartItem(productCode);
+        if(productItemFound != -1) {
+            CartItem item = items.get(productItemFound);
+            item.setQuantity(item.getQuantity() + quantityToAdd);
+        } else {
+            items.add(new CartItem(productCode, quantityToAdd));
+        }
     }
 
     @Override
@@ -43,5 +49,28 @@ public class SimpleCart implements Cart {
     @Override
     public int getProductCode(int i) {
         return items.get(i).getProductCode();
+    }
+
+    @Override
+    public void updateItem(int productCode, int quantity) {
+        int index = findCartItem(productCode);
+        if(index >= 0) {
+            items.get(index).setQuantity(quantity);
+            if(quantity == 0) {
+                items.remove(index);
+            }
+        }
+    }
+
+    private int findCartItem(int productCode) {
+        int index = -1;
+        for (int i = 0; i < items.size(); i++) {
+            CartItem cartItem = items.get(i);
+            if(cartItem.getProductCode() == productCode) {
+                index = i;
+                break;
+            }
+        }
+        return index;
     }
 }

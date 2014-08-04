@@ -17,6 +17,12 @@ public class CartTest {
         assertEquals(42, cart.getProductCode(0));
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowWhenRequestingNotExistingCartItem() throws Exception {
+        Cart cart = new SimpleCart();
+        cart.getProductCode(0);
+    }
+
     @Test
     public void twoProductsShouldBeAddedToCart() throws Exception {
         Cart cart = new SimpleCart();

@@ -8,7 +8,6 @@ import java.util.*;
  */
 public class SimpleCart implements Cart {
 
-    private List<CartItem> items = new ArrayList<CartItem>();
     private Map<Integer, CartItem> itemsMap = new LinkedHashMap<Integer, CartItem>();
     private PriceService priceService;
 
@@ -17,39 +16,25 @@ public class SimpleCart implements Cart {
 
     @Override
     public void addToCart(int productCode, int quantityToAdd) {
-        int productItemFound = findCartItem(productCode);
-        CartItem cartItem = itemsMap.get(Integer.valueOf(productCode));
-        if(productItemFound != -1) {
-            CartItem item = items.get(productItemFound);
-            if(item != cartItem) {
-                throw new IllegalStateException("addToCart refactoring failed");
-            }
+        CartItem item = itemsMap.get(Integer.valueOf(productCode));
+        if(item != null) {
             item.setQuantity(item.getQuantity() + quantityToAdd);
         } else {
             CartItem newItem = new CartItem(productCode, quantityToAdd);
-            items.add(newItem);
             itemsMap.put(Integer.valueOf(productCode), newItem);
         }
     }
 
     @Override
     public Double calculateTotalPrice() {
-        double sum = 0d;
-        for (int i = 0; i < items.size(); i++) {
-            CartItem item = items.get(i);
-            sum += priceService.findPrice(item.getProductCode()) * item.getQuantity();
-        }
 
-        double sum2 = 0d;
+        double sum = 0d;
         for (Iterator<Map.Entry<Integer, CartItem>> iterator = itemsMap.entrySet().iterator(); iterator.hasNext(); ) {
             Map.Entry<Integer, CartItem> itemEntry = iterator.next();
             CartItem cartItem = itemEntry.getValue();
-            sum2 += priceService.findPrice(cartItem.getProductCode()) * cartItem.getQuantity();
+            sum += priceService.findPrice(cartItem.getProductCode()) * cartItem.getQuantity();
         }
 
-        if(sum != sum2) {
-            throw new IllegalStateException("calculateTotalPrice refactoring");
-        }
         return sum;
     }
 
@@ -59,14 +44,11 @@ public class SimpleCart implements Cart {
 
     @Override
     public int getItemsSize() {
-        if(itemsMap.size() != items.size()) {
-            throw new IllegalStateException("getItemsSize refactoring");
-        }
-        return items.size();
+        return itemsMap.size();
     }
 
     @Override
-    public int getProductCode(int itemsIndex) {
+    public Integer getProductCode(int itemsIndex) {
         int i = 0;
         if(itemsIndex >= itemsMap.size()) {
             throw new IllegalStateException("No cart item with index "+itemsIndex);
@@ -81,38 +63,18 @@ public class SimpleCart implements Cart {
             i++;
         }
 
-        if(productCode != items.get(itemsIndex).getProductCode()) {
-            throw new IllegalStateException("getProductCode refactoring");
-        }
-        return items.get(itemsIndex).getProductCode();
+        return productCode;
     }
 
     @Override
     public void updateItem(int productCode, int quantity) {
-        int index = findCartItem(productCode);
-        CartItem cartItem = itemsMap.get(Integer.valueOf(productCode));
-        if(index >= 0) {
-            CartItem item = items.get(index);
-            if(cartItem != item) {
-                throw new IllegalStateException("updateItem refactoring");
-            }
+        CartItem item = itemsMap.get(Integer.valueOf(productCode));
+        if(item != null) {
             item.setQuantity(quantity);
             if(quantity == 0) {
-                items.remove(index);
                 itemsMap.remove(Integer.valueOf(productCode));
             }
         }
     }
 
-    private int findCartItem(int productCode) {
-        int index = -1;
-        for (int i = 0; i < items.size(); i++) {
-            CartItem cartItem = items.get(i);
-            if(cartItem.getProductCode() == productCode) {
-                index = i;
-                break;
-            }
-        }
-        return index;
-    }
 }

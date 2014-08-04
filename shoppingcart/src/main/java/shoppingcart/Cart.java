@@ -11,7 +11,7 @@ public interface Cart {
 
     int getItemsSize();
 
-    int getProductCode(int i);
+    Integer getProductCode(int i);
 
     void updateItem(int productCode, int quantity);
 }

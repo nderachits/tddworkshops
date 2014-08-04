@@ -14,7 +14,7 @@ public class CartTest {
         Cart cart = new SimpleCart();
         cart.addToCart(42, 1);
         assertEquals(1, cart.getItemsSize());
-        assertEquals(42, cart.getProductCode(0));
+        assertEquals(42, cart.getProductCode(0).intValue());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -29,8 +29,8 @@ public class CartTest {
         cart.addToCart(1, 1);
         cart.addToCart(42, 1);
         assertEquals(2, cart.getItemsSize());
-        assertEquals(1, cart.getProductCode(0));
-        assertEquals(42, cart.getProductCode(1));
+        assertEquals(1, cart.getProductCode(0).intValue());
+        assertEquals(42, cart.getProductCode(1).intValue());
     }
 
     @Test

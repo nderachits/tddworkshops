@@ -34,12 +34,22 @@ public class SimpleCart implements Cart {
 
     @Override
     public Double calculateTotalPrice() {
-        Double sum = 0d;
+        double sum = 0d;
         for (int i = 0; i < items.size(); i++) {
             CartItem item = items.get(i);
             sum += priceService.findPrice(item.getProductCode()) * item.getQuantity();
         }
 
+        double sum2 = 0d;
+        for (Iterator<Map.Entry<Integer, CartItem>> iterator = itemsMap.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<Integer, CartItem> itemEntry = iterator.next();
+            CartItem cartItem = itemEntry.getValue();
+            sum2 += priceService.findPrice(cartItem.getProductCode()) * cartItem.getQuantity();
+        }
+
+        if(sum != sum2) {
+            throw new IllegalStateException("calculateTotalPrice refactoring");
+        }
         return sum;
     }
 

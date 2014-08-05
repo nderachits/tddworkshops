@@ -5,12 +5,15 @@ package shoppingcart;
  * Date: 8/5/14
  */
 public class BundlePromotion implements Promotion {
-    private double promotionPrice;
-    private int[] productsInPromotion;
+    final private double promotionPrice;
+    final private int[] productsInPromotion;
 
     public BundlePromotion(double promotionPrice, int... products) {
         this.promotionPrice = promotionPrice;
         this.productsInPromotion = products;
+        if(products.length == 0) {
+            throw new IllegalArgumentException("Bundle promotion must be applied to at least one product");
+        }
     }
 
     @Override
@@ -40,7 +43,16 @@ public class BundlePromotion implements Promotion {
         for (int i = 0; i < productsInPromotion.length; i++) {
             ordinaryPrice += priceService.findPrice(productsInPromotion[i]);
         }
-        return promotionPrice - ordinaryPrice;
+        double adjustmentForOne = promotionPrice - ordinaryPrice;
+
+        int timesPromotionApplied = Integer.MAX_VALUE;
+        for (int i = 0; i < productsInPromotion.length; i++) {
+            int productCode = productsInPromotion[i];
+            CartItem cartItem = cart.getCartItem(productCode);
+            timesPromotionApplied = Math.min(timesPromotionApplied, cartItem.getQuantity());
+        }
+
+        return adjustmentForOne * timesPromotionApplied;
     }
 
     @Override

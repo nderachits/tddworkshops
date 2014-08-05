@@ -18,4 +18,6 @@ public interface Cart {
     PriceService getPriceService();
 
     void setAdjustment(double adjustment);
+
+    CartItem getCartItem(int productCode);
 }

@@ -119,7 +119,7 @@ public class CartTest {
     }
 
     @Test
-    public void bundlePromotionShouldBeApplied() throws Exception {
+    public void bundlePromotionShouldBeAppliedOnce() throws Exception {
         SimpleCart cart = ObjectMother.createCart();
         cart.setPromotionService(ObjectMother.createPromotionService());
         cart.addToCart(1, 1);

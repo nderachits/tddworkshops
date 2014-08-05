@@ -94,4 +94,9 @@ public class SimpleCart implements Cart {
     public void setAdjustment(double adjustment) {
         this.adjustment = adjustment;
     }
+
+    @Override
+    public CartItem getCartItem(int productCode) {
+        return itemsMap.get(productCode);
+    }
 }

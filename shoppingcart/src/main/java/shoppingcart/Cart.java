@@ -11,7 +11,11 @@ public interface Cart {
 
     int getItemsSize();
 
-    Integer getProductCode(int i);
-
     void updateItem(int productCode, int quantity);
+
+    CartItem[] getItemsCopy();
+
+    PriceService getPriceService();
+
+    void setAdjustment(double adjustment);
 }

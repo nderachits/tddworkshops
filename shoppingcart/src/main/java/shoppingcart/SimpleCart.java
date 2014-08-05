@@ -8,8 +8,10 @@ import java.util.*;
  */
 public class SimpleCart implements Cart {
 
-    private Map<Integer, CartItem> itemsMap = new LinkedHashMap<Integer, CartItem>();
+    private LinkedHashMap<Integer, CartItem> itemsMap = new LinkedHashMap<Integer, CartItem>();
     private PriceService priceService;
+    private PromotionService promotionService;
+    private double adjustment = 0d;
 
     public SimpleCart() {
     }
@@ -34,6 +36,11 @@ public class SimpleCart implements Cart {
             CartItem cartItem = itemEntry.getValue();
             sum += priceService.findPrice(cartItem.getProductCode()) * cartItem.getQuantity();
         }
+        if(promotionService != null) {
+            promotionService.applyToCart(this);
+        }
+
+        sum += adjustment;
 
         return sum;
     }
@@ -48,25 +55,6 @@ public class SimpleCart implements Cart {
     }
 
     @Override
-    public Integer getProductCode(int itemsIndex) {
-        int i = 0;
-        if(itemsIndex >= itemsMap.size()) {
-            throw new IllegalStateException("No cart item with index "+itemsIndex);
-        }
-        Integer productCode = null;
-        for (Iterator<Integer> iterator = itemsMap.keySet().iterator(); iterator.hasNext(); ) {
-            Integer nextCode = iterator.next();
-            if(i == itemsIndex) {
-                productCode = nextCode;
-                break;
-            }
-            i++;
-        }
-
-        return productCode;
-    }
-
-    @Override
     public void updateItem(int productCode, int quantity) {
         CartItem item = itemsMap.get(Integer.valueOf(productCode));
         if(item != null) {
@@ -77,4 +65,33 @@ public class SimpleCart implements Cart {
         }
     }
 
+    @Override
+    public CartItem[] getItemsCopy() {
+        Collection<CartItem> values = itemsMap.values();
+        CartItem[] items = new CartItem[values.size()];
+        int i=0;
+        for (Iterator<CartItem> iterator = values.iterator(); iterator.hasNext(); ) {
+            CartItem item = iterator.next();
+            try {
+                items[i] = (CartItem) item.clone();
+            } catch (CloneNotSupportedException e) {
+                throw new IllegalStateException(e);
+            }
+            i++;
+        }
+        return items;
+    }
+
+    public void setPromotionService(PromotionService promotionService) {
+        this.promotionService = promotionService;
+    }
+
+    public PriceService getPriceService() {
+        return priceService;
+    }
+
+    @Override
+    public void setAdjustment(double adjustment) {
+        this.adjustment = adjustment;
+    }
 }

@@ -4,7 +4,7 @@ package shoppingcart;
  * User: nike
  * Date: 8/2/14
  */
-public class CartItem {
+public class CartItem implements Cloneable{
 
     private int productCode;
     private int quantity;
@@ -24,5 +24,10 @@ public class CartItem {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

@@ -14,13 +14,16 @@ public class CartTest {
         Cart cart = new SimpleCart();
         cart.addToCart(42, 1);
         assertEquals(1, cart.getItemsSize());
-        assertEquals(42, cart.getProductCode(0).intValue());
+        CartItem[] items = cart.getItemsCopy();
+        assertEquals(42, items[0].getProductCode());
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowWhenRequestingNotExistingCartItem() throws Exception {
+    @Test
+    public void copySizeShouldBeZeroForNewCart() throws Exception {
         Cart cart = new SimpleCart();
-        cart.getProductCode(0);
+        CartItem[] items = cart.getItemsCopy();
+        assertEquals(0, items.length);
+        assertEquals(0, cart.getItemsSize());
     }
 
     @Test
@@ -28,9 +31,10 @@ public class CartTest {
         Cart cart = new SimpleCart();
         cart.addToCart(1, 1);
         cart.addToCart(42, 1);
-        assertEquals(2, cart.getItemsSize());
-        assertEquals(1, cart.getProductCode(0).intValue());
-        assertEquals(42, cart.getProductCode(1).intValue());
+        CartItem[] items = cart.getItemsCopy();
+        assertEquals(2, items.length);
+        assertEquals(1, items[0].getProductCode());
+        assertEquals(42, items[1].getProductCode());
     }
 
     @Test
@@ -43,24 +47,17 @@ public class CartTest {
     public void shouldReturnPriceOfCart() throws Exception {
 
         SimpleCart cart = new SimpleCart();
-        cart.setPriceService(buildPriceService());
+        cart.setPriceService(ObjectMother.createPriceService());
 
         cart.addToCart(1, 1);
         cart.addToCart(42, 1);
         assertEquals(Double.valueOf(68.5d), cart.calculateTotalPrice());
     }
 
-    private PriceService buildPriceService() {
-        PriceService priceService = new PriceService();
-        priceService.setPrice(Integer.valueOf(42), 49.5d);
-        priceService.setPrice(Integer.valueOf(1), 19.0d);
-        return priceService;
-    }
-
     @Test
     public void productWithQuantityShouldBeCountedCorrectly() throws Exception {
         SimpleCart cart = new SimpleCart();
-        cart.setPriceService(buildPriceService());
+        cart.setPriceService(ObjectMother.createPriceService());
 
         cart.addToCart(42, 2);
         assertEquals(Double.valueOf(49.5 * 2), cart.calculateTotalPrice());
@@ -69,7 +66,7 @@ public class CartTest {
     @Test
     public void productItemShouldBeUpdated() throws Exception {
         SimpleCart cart = new SimpleCart();
-        cart.setPriceService(buildPriceService());
+        cart.setPriceService(ObjectMother.createPriceService());
         cart.addToCart(1, 1);
         cart.addToCart(42, 4);
         cart.updateItem(42, 3);
@@ -80,7 +77,7 @@ public class CartTest {
     @Test
     public void itemShouldBeDeletedWhenQuantitySetToZero() throws Exception {
         SimpleCart cart = new SimpleCart();
-        cart.setPriceService(buildPriceService());
+        cart.setPriceService(ObjectMother.createPriceService());
         cart.addToCart(42, 4);
         cart.addToCart(1, 1);
         cart.updateItem(42, 0);
@@ -91,10 +88,43 @@ public class CartTest {
     @Test
     public void quantityShouldBeIncreasedWhenAddingAlreadyPlacedProduct() throws Exception {
         SimpleCart cart = new SimpleCart();
-        cart.setPriceService(buildPriceService());
+        cart.setPriceService(ObjectMother.createPriceService());
         cart.addToCart(42, 2);
         cart.addToCart(42, 1);
         assertEquals(Double.valueOf(49.5d * 3), cart.calculateTotalPrice());
         assertEquals(1, cart.getItemsSize());
+    }
+
+    @Test
+    public void shouldReturnCopyOfProductsWithQuantity() throws Exception {
+        SimpleCart cart = ObjectMother.createCart();
+        cart.addToCart(1, 2);
+        cart.addToCart(42, 1);
+        CartItem[] items = cart.getItemsCopy();
+        assertEquals(2, items.length);
+        assertEquals(1, items[0].getProductCode());
+        assertEquals(2, items[0].getQuantity());
+        assertEquals(42, items[1].getProductCode());
+        assertEquals(1, items[1].getQuantity());
+    }
+
+    @Test
+    public void changingItemsCopyShouldNotChangeOrigin() throws Exception {
+        SimpleCart cart = ObjectMother.createCart();
+        cart.addToCart(1, 2);
+        CartItem[] itemsToChange = cart.getItemsCopy();
+        itemsToChange[0].setQuantity(3);
+        CartItem[] items = cart.getItemsCopy();
+        assertEquals(2, items[0].getQuantity());
+    }
+
+    @Test
+    public void bundlePromotionShouldBeApplied() throws Exception {
+        SimpleCart cart = ObjectMother.createCart();
+        cart.setPromotionService(ObjectMother.createPromotionService());
+        cart.addToCart(1, 1);
+        cart.addToCart(42, 1);
+        assertEquals(2, cart.getItemsSize());
+        assertEquals(Double.valueOf(60d), cart.calculateTotalPrice());
     }
 }

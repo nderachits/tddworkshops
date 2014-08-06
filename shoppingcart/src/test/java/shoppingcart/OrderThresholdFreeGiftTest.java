@@ -15,6 +15,7 @@ public class OrderThresholdFreeGiftTest {
         SimpleCart cart = ObjectMother.createCart();
         cart.addToCart(42,10);
         assertEquals(true, promotion.isApplicable(cart));
+        assertEquals(0d, promotion.getAdjustment(cart), 0.0001d);
     }
 
 }

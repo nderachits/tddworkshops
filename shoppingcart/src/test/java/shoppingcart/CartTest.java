@@ -141,6 +141,7 @@ public class CartTest {
         cart.addToCart(42,10);
         assertEquals(2, cart.getItemsSize());
         assertTrue(cart.getCartItem(1) != null);
+        assertEquals(2, cart.getItemsCopy().size());
     }
 
     @Test
@@ -155,6 +156,7 @@ public class CartTest {
         cart.calculateTotalPrice();
         cart.updateItem(42, 1);
         assertEquals(1, cart.getItemsSize());
+        assertTrue(cart.getCartItem(1) == null);
     }
 
     @Test

@@ -16,14 +16,21 @@ public class PromotionService {
     }
 
     public void applyToCart(Cart cart) {
+        Promotion promotionToApply = null;
+        double highestDiscount = 0d;
         for (int i = 0; i < promotions.size(); i++) {
             Promotion promotion = promotions.get(i);
             if(promotion.isApplicable(cart)) {
-                promotion.apply(cart);
-                break;
-            } else {
-                promotion.cancel(cart);
+                double discount = promotion.getDiscount(cart);
+                if(highestDiscount < promotion.getDiscount(cart)) {
+                    promotionToApply = promotion;
+                    highestDiscount = discount;
+                }
             }
+            promotion.cancel(cart);
+        }
+        if(promotionToApply != null) {
+            promotionToApply.apply(cart);
         }
     }
 }

@@ -43,4 +43,9 @@ public class OrderThresholdFreeGift implements Promotion {
     public void cancel(Cart cart) {
         cart.removeGift(giftCode);
     }
+
+    @Override
+    public double getDiscount(Cart cart) {
+        return cart.getPriceService().findPrice(giftCode);
+    }
 }

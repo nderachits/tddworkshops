@@ -16,6 +16,7 @@ public class OrderThresholdFreeGiftTest {
         cart.addToCart(42,10);
         assertEquals(true, promotion.isApplicable(cart));
         assertEquals(0d, promotion.getAdjustment(cart), 0.0001d);
+        assertEquals(19.0d, promotion.getDiscount(cart), 0.0001d);
     }
 
 }

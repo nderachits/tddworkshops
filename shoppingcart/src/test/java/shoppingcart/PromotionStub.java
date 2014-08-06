@@ -32,4 +32,9 @@ public class PromotionStub implements Promotion {
     public void cancel(Cart cart) {
 
     }
+
+    @Override
+    public double getDiscount(Cart cart) {
+        return -adjustment;
+    }
 }

@@ -34,6 +34,7 @@ public class BundlePromotionTest {
         cart.addToCart(1,1);
         cart.addToCart(42,1);
         assertEquals(-8.5d, promotion.getAdjustment(cart), 0.0001);
+        assertEquals(8.5d, promotion.getDiscount(cart), 0.0001);
     }
 
     @Test
@@ -43,6 +44,7 @@ public class BundlePromotionTest {
         cart.addToCart(1,2);
         cart.addToCart(42,2);
         assertEquals(-17d, promotion.getAdjustment(cart), 0.0001);
+        assertEquals(17d, promotion.getDiscount(cart), 0.0001);
 
     }
 
@@ -51,5 +53,6 @@ public class BundlePromotionTest {
         BundlePromotion promotion = new BundlePromotion(60d);
         SimpleCart cart = ObjectMother.createCart();
         assertEquals(0d, promotion.getAdjustment(cart), 0.0001);
+        assertEquals(0d, promotion.getDiscount(cart), 0.0001);
     }
 }

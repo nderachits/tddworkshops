@@ -25,7 +25,7 @@ public class PromotionServiceTest {
     public void shouldOnePromotionBeAppliedOnly() throws Exception {
         PromotionService promotionService = new PromotionService();
         Promotion promotion = new PromotionStub(true, -5d);
-        Promotion promotion2 = new PromotionStub(true, -10d);
+        Promotion promotion2 = new PromotionStub(true, -5d);
         SimpleCart cart = new SimpleCart();
         promotionService.addPromotion(promotion);
         promotionService.addPromotion(promotion2);
@@ -33,5 +33,36 @@ public class PromotionServiceTest {
         promotionService.applyToCart(cart);
 
         assertEquals(Double.valueOf(-5d), cart.calculateTotalPrice());
+    }
+
+    @Test
+    public void promotionWithHighestDiscountShouldBeApplied() throws Exception {
+        PromotionService promotionService = new PromotionService();
+        Promotion promotion = new PromotionStub(true, -5d);
+        Promotion promotion2 = new PromotionStub(true, -10d);
+        SimpleCart cart = new SimpleCart();
+        promotionService.addPromotion(promotion);
+        promotionService.addPromotion(promotion2);
+
+        promotionService.applyToCart(cart);
+
+        assertEquals(Double.valueOf(-10d), cart.calculateTotalPrice());
+
+    }
+
+
+    @Test
+    public void promotionWithHighestDiscountShouldBeAppliedAnotherOrder() throws Exception {
+        PromotionService promotionService = new PromotionService();
+        Promotion promotion = new PromotionStub(true, -10d);
+        Promotion promotion2 = new PromotionStub(true, -5d);
+        SimpleCart cart = new SimpleCart();
+        promotionService.addPromotion(promotion);
+        promotionService.addPromotion(promotion2);
+
+        promotionService.applyToCart(cart);
+
+        assertEquals(Double.valueOf(-10d), cart.calculateTotalPrice());
+
     }
 }

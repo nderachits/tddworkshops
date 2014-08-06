@@ -66,4 +66,9 @@ public class BundlePromotion implements Promotion {
     public void cancel(Cart cart) {
         cart.setAdjustment(0);
     }
+
+    @Override
+    public double getDiscount(Cart cart) {
+        return -getAdjustment(cart);
+    }
 }

@@ -12,4 +12,6 @@ interface Promotion {
     void apply(Cart cart);
 
     void cancel(Cart cart);
+
+    double getDiscount(Cart cart);
 }

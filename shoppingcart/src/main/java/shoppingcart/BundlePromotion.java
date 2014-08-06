@@ -1,5 +1,7 @@
 package shoppingcart;
 
+import java.util.List;
+
 /**
  * User: Mikalai_Dzerachyts
  * Date: 8/5/14
@@ -19,12 +21,12 @@ public class BundlePromotion implements Promotion {
     @Override
     public boolean isApplicable(Cart cart) {
         boolean allFound = true;
-        CartItem[] items = cart.getItemsCopy();
+        List<CartItem> items = cart.getItemsCopyBeforePromotionsApplied();
         for (int i = 0; i < productsInPromotion.length; i++) {
             int promoProduct = productsInPromotion[i];
             boolean productFound = false;
-            for (int j = 0; j < items.length; j++) {
-                CartItem cartItem = items[j];
+            for (int j = 0; j < items.size(); j++) {
+                CartItem cartItem = items.get(j);
                 if(cartItem.getProductCode() == promoProduct) {
                     productFound = true;
                 }
@@ -58,5 +60,10 @@ public class BundlePromotion implements Promotion {
     @Override
     public void apply(Cart cart) {
         cart.setAdjustment(getAdjustment(cart));
+    }
+
+    @Override
+    public void cancel(Cart cart) {
+        cart.setAdjustment(0);
     }
 }

@@ -12,6 +12,8 @@ public class SimpleCart implements Cart {
     private PriceService priceService;
     private PromotionService promotionService;
     private double adjustment = 0d;
+    private CartItem gift;
+    private boolean promotionsNeedRecalculate = true;
 
     public SimpleCart() {
     }
@@ -25,10 +27,12 @@ public class SimpleCart implements Cart {
             CartItem newItem = new CartItem(productCode, quantityToAdd);
             itemsMap.put(Integer.valueOf(productCode), newItem);
         }
+        promotionsNeedRecalculate = true;
     }
 
     @Override
     public Double calculateTotalPrice() {
+        calculatePromotions();
 
         double sum = 0d;
         for (Iterator<Map.Entry<Integer, CartItem>> iterator = itemsMap.entrySet().iterator(); iterator.hasNext(); ) {
@@ -36,13 +40,17 @@ public class SimpleCart implements Cart {
             CartItem cartItem = itemEntry.getValue();
             sum += priceService.findPrice(cartItem.getProductCode()) * cartItem.getQuantity();
         }
-        if(promotionService != null) {
-            promotionService.applyToCart(this);
-        }
-
         sum += adjustment;
-
         return sum;
+    }
+
+    private void calculatePromotions() {
+        if(promotionsNeedRecalculate) {
+            if(promotionService != null) {
+                promotionService.applyToCart(this);
+            }
+        }
+        promotionsNeedRecalculate = false;
     }
 
     public void setPriceService(PriceService priceService) {
@@ -51,7 +59,13 @@ public class SimpleCart implements Cart {
 
     @Override
     public int getItemsSize() {
-        return itemsMap.size();
+        calculatePromotions();
+
+        int size = itemsMap.size();
+        if( gift != null ){
+            size++;
+        }
+        return size;
     }
 
     @Override
@@ -63,21 +77,25 @@ public class SimpleCart implements Cart {
                 itemsMap.remove(Integer.valueOf(productCode));
             }
         }
+        promotionsNeedRecalculate = true;
     }
 
     @Override
-    public CartItem[] getItemsCopy() {
-        Collection<CartItem> values = itemsMap.values();
-        CartItem[] items = new CartItem[values.size()];
-        int i=0;
-        for (Iterator<CartItem> iterator = values.iterator(); iterator.hasNext(); ) {
-            CartItem item = iterator.next();
-            try {
-                items[i] = (CartItem) item.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new IllegalStateException(e);
-            }
-            i++;
+    public List<CartItem> getItemsCopyBeforePromotionsApplied() {
+        List<CartItem> copy = new ArrayList<>();
+        for (Iterator<CartItem> iterator = itemsMap.values().iterator(); iterator.hasNext(); ) {
+            CartItem next = iterator.next();
+            copy.add(new CartItem(next.getProductCode(), next.getQuantity()));
+        }
+        return copy;
+    }
+
+    @Override
+    public List<CartItem> getItemsCopy() {
+        calculatePromotions();
+        List<CartItem> items = getItemsCopyBeforePromotionsApplied();
+        if(gift != null) {
+            items.add(gift);
         }
         return items;
     }
@@ -97,6 +115,29 @@ public class SimpleCart implements Cart {
 
     @Override
     public CartItem getCartItem(int productCode) {
-        return itemsMap.get(productCode);
+        int quantity = 0;
+        if(gift!= null && gift.getProductCode() == productCode) {
+            quantity += gift.getQuantity();
+        }
+        CartItem item = itemsMap.get(productCode);
+        if(item != null) {
+            quantity += item.getQuantity();
+        }
+
+        if(quantity == 0) {
+            return null;
+        } else {
+            return new CartItem(productCode, quantity);
+        }
+    }
+
+    @Override
+    public void applyGift(int giftCode) {
+        this.gift = new CartItem(giftCode, 1);
+    }
+
+    @Override
+    public void removeGift(int giftCode) {
+        this.gift = null;
     }
 }

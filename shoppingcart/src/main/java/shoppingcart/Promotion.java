@@ -10,4 +10,6 @@ interface Promotion {
     double getAdjustment(Cart cart);
 
     void apply(Cart cart);
+
+    void cancel(Cart cart);
 }

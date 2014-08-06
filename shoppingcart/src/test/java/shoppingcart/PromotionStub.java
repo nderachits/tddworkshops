@@ -27,4 +27,9 @@ public class PromotionStub implements Promotion {
     public void apply(Cart cart) {
         cart.setAdjustment(adjustment);
     }
+
+    @Override
+    public void cancel(Cart cart) {
+
+    }
 }

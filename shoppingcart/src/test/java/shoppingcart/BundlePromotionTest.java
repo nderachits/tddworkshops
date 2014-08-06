@@ -51,6 +51,5 @@ public class BundlePromotionTest {
         BundlePromotion promotion = new BundlePromotion(60d);
         SimpleCart cart = ObjectMother.createCart();
         assertEquals(0d, promotion.getAdjustment(cart), 0.0001);
-
     }
 }

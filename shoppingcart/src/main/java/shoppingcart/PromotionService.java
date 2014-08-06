@@ -20,6 +20,9 @@ public class PromotionService {
             Promotion promotion = promotions.get(i);
             if(promotion.isApplicable(cart)) {
                 promotion.apply(cart);
+                break;
+            } else {
+                promotion.cancel(cart);
             }
         }
     }

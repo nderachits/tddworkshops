@@ -5,7 +5,11 @@
   <artifactId>searchworkshop</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>searchworkshop</name>
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+  </properties>
+    <name>searchworkshop</name>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
